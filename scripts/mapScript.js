@@ -1,11 +1,112 @@
-let n = getInput();
-let map = createMap(n);
-
-
-for (let i = 0; i < 20;i++) {
+const n = 25;
+const bombCount = 50;
+const map = createMap(n);
+for (let i = 0; i < bombCount;i++) {
     generateBomb(map,n);
 }
+
 printMap(map);
+
+renderBoard(map);
+
+function renderBoard(map) {
+    const board = document.getElementById("board");
+    board.style.gridTemplateColumns = `repeat(${map.length}, 30px)`;
+    board.innerHTML = ""; // clear before re-rendering
+
+    for (let row = 0; row < map.length; row++) {
+        for (let col = 0; col < map.length; col++) { 
+            const tile = document.createElement("div");
+            tile.className = "tile";
+            tile.dataset.row = row;
+            tile.dataset.col = col;
+
+            tile.addEventListener("click" ,() => {
+                revealTile(tile, map);
+
+            });
+
+            tile.addEventListener("contextmenu", (e) => {
+                e.preventDefault(); // prevent default right-click menu
+                toggleFlag(tile);
+            });
+
+            board.appendChild(tile);
+        }
+    }
+}
+
+function toggleFlag(tile) {
+    if (tile.classList.contains("revealed")) return;
+    
+    if (tile.classList.contains("flagged")) {
+        tile.classList.remove("flagged");
+        tile.textContent = "";
+    } else {
+        tile.classList.add("flagged");
+        tile.textContent = "🚩";
+    }
+}
+
+function revealTile(tile, map) {
+    const row = parseInt(tile.dataset.row);
+    const col = parseInt(tile.dataset.col);
+    const value = map[row][col];
+
+    if (tile.classList.contains("revealed")) return;
+
+    tile.classList.add("revealed");
+
+    if (value === -1) {
+        tile.classList.add("bomb");
+        tile.textContent = "💣";
+        alert("Game Over!");
+    } else if (value > 0) {
+        tile.textContent = value;
+    } else {
+        tile.classList.remove("revealed");
+        floodReveal(row, col, map);
+    }
+}
+
+function floodReveal(row, col, map) {
+    // Out of bounds
+    if (
+        row < 0 || row >= map.length ||
+        col < 0 || col >= map[0].length
+    ) return;
+
+    const tile = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+    if (!tile) return;
+
+    const value = map[row][col];
+    if (value === -1) return;
+
+    if (tile.classList.contains("revealed")) return;
+    tile.classList.add("revealed");
+
+    
+
+    if (value > 0) {
+        tile.textContent = value;
+        return;
+    }
+
+    
+
+    const directions = [
+        [-1, 0], [1, 0],  // up, down
+        [0, -1], [0, 1],  // left, right 
+    ];
+
+    for (const [dx, dy] of directions) {
+        floodReveal(row + dx, col + dy, map);
+    }
+
+    tile.textContent = value;
+}
+
+
 
 function getInput() {
     return parseInt(prompt("What will n be in the n x n matrix",10));
