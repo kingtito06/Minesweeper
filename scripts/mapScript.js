@@ -1,5 +1,5 @@
 const n = 25;
-const bombCount = 50;
+const bombCount = 90;
 const map = createMap(n);
 for (let i = 0; i < bombCount;i++) {
     generateBomb(map,n);
@@ -63,6 +63,7 @@ function revealTile(tile, map) {
         alert("Game Over!");
     } else if (value > 0) {
         tile.textContent = value;
+        tile.classList.add(`tile-${value}`);
     } else {
         tile.classList.remove("revealed");
         floodReveal(row, col, map);
@@ -89,6 +90,7 @@ function floodReveal(row, col, map) {
 
     if (value > 0) {
         tile.textContent = value;
+        tile.classList.add(`tile-${value}`);
         return;
     }
 

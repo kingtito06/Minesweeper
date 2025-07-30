@@ -21,3 +21,12 @@
 .tile.bomb {
     background: red;
 }
+
+.tile-1 { color: blue; }
+.tile-2 { color: green; }
+.tile-3 { color: brown; }
+.tile-4 { color: red; }
+.tile-5 { color: purple; }
+.tile-6 { color: magenta; }
+.tile-7 { color: rgb(216, 134, 0); }
+.tile-8 { color: rgb(255, 47, 116); }
