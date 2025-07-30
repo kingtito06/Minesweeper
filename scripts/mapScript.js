@@ -1,12 +1,12 @@
-const n = 25;
-const bombCount = 90;
+const n = 20;
+const bombCount = 40;
 const map = createMap(n);
+
 for (let i = 0; i < bombCount;i++) {
     generateBomb(map,n);
 }
 
 printMap(map);
-
 renderBoard(map);
 
 function renderBoard(map) {
@@ -15,11 +15,12 @@ function renderBoard(map) {
     board.innerHTML = ""; // clear before re-rendering
 
     for (let row = 0; row < map.length; row++) {
-        for (let col = 0; col < map.length; col++) { 
+        for (let col = 0; col < map.length; col++) {
             const tile = document.createElement("div");
             tile.className = "tile";
             tile.dataset.row = row;
             tile.dataset.col = col;
+            tile.classList.add(`tilebg-${(row+col)%2}`);
 
             tile.addEventListener("click" ,() => {
                 revealTile(tile, map);
@@ -53,9 +54,10 @@ function revealTile(tile, map) {
     const col = parseInt(tile.dataset.col);
     const value = map[row][col];
 
-    if (tile.classList.contains("revealed")) return;
+    if (tile.classList.contains(`revealed-${(row+col)%2}`)) return;
 
-    tile.classList.add("revealed");
+    tile.classList.remove(`tilebg-${(row+col)%2}`);
+    tile.classList.add(`revealed-${(row+col)%2}`);
 
     if (value === -1) {
         tile.classList.add("bomb");
@@ -65,7 +67,7 @@ function revealTile(tile, map) {
         tile.textContent = value;
         tile.classList.add(`tile-${value}`);
     } else {
-        tile.classList.remove("revealed");
+        tile.classList.remove(`revealed-${(row+col)%2}`);
         floodReveal(row, col, map);
     }
 }
@@ -83,18 +85,16 @@ function floodReveal(row, col, map) {
     const value = map[row][col];
     if (value === -1) return;
 
-    if (tile.classList.contains("revealed")) return;
-    tile.classList.add("revealed");
+    if (tile.classList.contains(`revealed-${(row+col)%2}`)) return;
 
-    
+    tile.classList.remove(`tilebg-${(row+col)%2}`);
+    tile.classList.add(`revealed-${(row+col)%2}`);
 
     if (value > 0) {
         tile.textContent = value;
         tile.classList.add(`tile-${value}`);
         return;
     }
-
-    
 
     const directions = [
         [-1, 0], [1, 0],  // up, down
@@ -106,11 +106,7 @@ function floodReveal(row, col, map) {
     for (const [dx, dy] of directions) {
         floodReveal(row + dx, col + dy, map);
     }
-
-    tile.textContent = value;
 }
-
-
 
 function getInput() {
     return parseInt(prompt("What will n be in the n x n matrix",10));
@@ -124,10 +120,10 @@ function createMap(n) {
 // creating two-dimensional array
     let map = [];
     for (let i = 0; i < n; i++) {
-    map[i] = [];
-    for (let j = 0; j < n; j++) {
-        map[i][j] = 0;
-    }
+        map[i] = [];
+            for (let j = 0; j < n; j++) {
+                map[i][j] = 0;
+        }
     }
     return map;
 }
@@ -165,4 +161,3 @@ function incrementTiles(map,row,col,n) {
         }
     }
 }
-
