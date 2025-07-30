@@ -98,7 +98,9 @@ function floodReveal(row, col, map) {
 
     const directions = [
         [-1, 0], [1, 0],  // up, down
-        [0, -1], [0, 1],  // left, right 
+        [0, -1], [0, 1],  // left, right
+        [1, 1], [1, -1],  // right-down, right-up
+        [-1, 1], [-1, -1],  // left-down, left-up
     ];
 
     for (const [dx, dy] of directions) {
